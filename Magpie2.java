@@ -71,11 +71,13 @@ public class Magpie2
             response = "Say something, please.";
         }
         // PLTW 1.1.6 Part C start
+        //cat, dog response
         else if (findKeyword(statement, "cat") >= 0
                 || findKeyword(statement, "dog") >= 0)
         {
             response = "Tell me more about your pets.";
         }
+        //teacher response
         else if (findKeyword(statement, "Kaehms") >= 0)
         {
             response = "He's really living life to the fullest, huh!";
