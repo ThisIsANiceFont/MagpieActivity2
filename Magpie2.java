@@ -83,13 +83,104 @@ public class Magpie2
             response = "He's really living life to the fullest, huh!";
         }
         // PLTW 1.1.6 Part C end
-        else
+        // PLTW 1.1.6 Part D start
+        else if (findKeyword(statement, "I want to", 0) >= 0)
         {
-            response = getRandomResponse();
+            response = transformIWantToStatement(statement);
         }
-        return response;
+    else if (findKeyword(statement, "I want", 0) >= 0)
+        {
+            response = transformIWantStatement(statement);
+        }
+        // PLTW 1.1.6 Part D end
+        else  // Look for a two word (you <something> me) pattern
+        {
+            // Look for a two word (you <something> me) pattern
+            int psn = findKeyword(statement, "you", 0);
+
+            if (psn >= 0 && findKeyword(statement, "me", psn) >= 0)
+            {
+                response = transformYouMeStatement(statement);
+            }
+            else
+            {
+                response = getRandomResponse();
+            }
+       }
+       return response;
     }
 
+    /**
+     * Take a statement with "I want to <something>." and transform it into 
+     * "What would it mean to <something>?"
+     * @param statement the user statement, assumed to contain "I want to"
+     * @return the transformed statement
+     */
+    private String transformIWantToStatement(String statement)
+    {
+        //  Remove the final period, if there is one
+        statement = statement.trim();
+        String lastChar = statement.substring(statement
+                .length() - 1);
+        if (lastChar.equals("."))
+        {
+            statement = statement.substring(0, statement
+                    .length() - 1);
+        }
+        int psn = findKeyword (statement, "I want to", 0);
+        String restOfStatement = statement.substring(psn + 9).trim();
+        return "What would it mean to " + restOfStatement + "?";
+    }
+    /**
+     * Take a statement with "I want <something>." and transform it into 
+     * "Would you really be happy if you had <something>?"
+     * @param statement the user statement, assumed to contain "I want to"
+     * @return the transformed statement
+     */
+    private String transformIWantStatement(String statement)
+    {
+        //  Remove the final period, if there is one
+        statement = statement.trim();
+        String lastChar = statement.substring(statement
+                .length() - 1);
+        if (lastChar.equals("."))
+        {
+            statement = statement.substring(0, statement
+                    .length() - 1);
+        }
+        int psn = findKeyword (statement, "I want", 0);
+        String restOfStatement = statement.substring(psn + 7).trim();
+        return "Would you really be happy if you had " + restOfStatement + "?";
+    }
+
+    /**
+     * Take a statement with "you <something> me" and transform it into 
+     * "What makes you think that I <something> you?"
+     * Also works if statement is "you <something> me <something else>" and transforms it into
+     * "What makes you think that I <something> you <something else>?"
+     * @param statement the user statement, assumed to contain "you" followed by "me"
+     * @return the transformed statement
+     */
+    private String transformYouMeStatement(String statement)
+    {
+        //  Remove the final period, if there is one
+        statement = statement.trim();
+        String lastChar = statement.substring(statement
+                .length() - 1);
+        if (lastChar.equals("."))
+        {
+            statement = statement.substring(0, statement
+                    .length() - 1);
+        }
+        
+        int psnOfYou = findKeyword (statement, "you", 0);
+        int psnOfMe = findKeyword (statement, "me", psnOfYou + 3);
+        
+        String restOfStatement = statement.substring(psnOfYou + 3, psnOfMe).trim();
+        String endOfStatement = " " + statement.substring(psnOfMe+2).trim();
+        return "What makes you think that I " + restOfStatement + " you" + endOfStatement + "?" ;
+}
+    
     /**
      * Pick a default response to use if nothing else fits.
      * @return a non-committal string
